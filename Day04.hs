@@ -1,36 +1,12 @@
-{-# LANGUAGE BangPatterns #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE MultiWayIf #-}
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TupleSections #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE ViewPatterns #-}
 
 module Day04 where
 
-import Control.Arrow ((&&&))
 import Control.Monad
-import Data.Array (Array)
-import Data.Bifunctor
-import Data.Char
-import Data.Either
-import Data.Function (on)
-import Data.Functor
-import Data.Map (Map)
-import Data.Maybe
-import Data.Set (Set)
 import Text.ParserCombinators.ReadP
 
 import Harness
 import ParseHelper
-
-import qualified Data.Array as A
-import qualified Data.List as L
-import qualified Data.Map as M
-import qualified Data.Set as S
-
-import Debug.Trace
 
 
 main :: IO ()
@@ -44,8 +20,8 @@ countFullOverlaps = length . filter isFullOverlap
   where
     isFullOverlap :: (SectionRange, SectionRange) -> Bool
     isFullOverlap (SectionRange e1Start e1End, SectionRange e2Start e2End) =
-        (e1Start >= e2Start && e1End <= e2End)
-            || (e2Start >= e1Start && e2End <= e1End)
+        e1Start >= e2Start && e1End <= e2End
+            || e2Start >= e1Start && e2End <= e1End
 
 
 countAnyOverlaps :: [(SectionRange, SectionRange)] -> Int

@@ -7,3 +7,4 @@ record-brace-space: true
 newlines-between-decls: 2
 respectful: true
 haddock-style: single-line
+haddock-style-module: multi-line

@@ -1,39 +1,14 @@
-{-# LANGUAGE BangPatterns #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE MultiWayIf #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TupleSections #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE ViewPatterns #-}
-
 module Day01 where
 
-import Control.Arrow ((&&&))
-import Control.Monad
-import Data.Array (Array)
-import Data.Bifunctor
-import Data.Char
-import Data.Either
 import Data.Function (on)
-import Data.Functor
-import Data.Map (Map)
-import Data.Maybe
-import Data.Set (Set)
 import Text.ParserCombinators.ReadP
 
 import Harness
 import ParseHelper
 
-import qualified Data.Array as A
 import qualified Data.List as L
-import qualified Data.Map as M
-import qualified Data.Set as S
-
-import Debug.Trace
 
 
--- (parseInput lineParser) OR (parseInputRaw fullInputParser)
 main :: IO ()
 main =
     getInputAndSolve (parseInputRaw elvesParser) highestCalorieElf topThreeElves

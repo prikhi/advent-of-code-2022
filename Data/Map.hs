@@ -93,6 +93,8 @@ mapKeys f = \case
                 }
 
 
+-- | Fold from the right branches to left, passing both the key & value to
+-- the reducing function.
 foldrWithKeys :: (k -> v -> b -> b) -> b -> Map k v -> b
 foldrWithKeys reducer acc = \case
     Leaf ->
@@ -116,6 +118,7 @@ insert !k !v = \case
             GT -> Branch bd {bdRight = insert k v bdRight}
 
 
+-- | Insert or update a value for the key.
 upsert :: Ord a => (Maybe b -> b) -> a -> Map a b -> Map a b
 upsert maker k = \case
     Leaf ->

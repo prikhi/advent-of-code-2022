@@ -15,12 +15,14 @@ import GHC.Arr as A
 import qualified Data.List as L
 
 
+-- | Set the values of multiple indexes in bulk.
 set :: (A.Ix i) => [(i, a)] -> A.Array i a -> A.Array i a
 set is arr =
     A.accum (\_ x -> x) arr is
 {-# INLINEABLE set #-}
 
 
+-- | Set all given indexes to the passed value.
 setAll :: (A.Ix i) => a -> [i] -> A.Array i a -> A.Array i a
 setAll a is arr =
     A.accum (\_ x -> x) arr (zip is (repeat a))
