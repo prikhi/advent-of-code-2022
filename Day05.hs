@@ -46,9 +46,8 @@ parseFullInput = do
     void newline
     instructions <- sepBy parseInstruction newline
     void newline
-    let stacks = map (CrateStack . catMaybes) $ L.transpose crateRows
     return
-        ( A.listArray (0, length stacks - 1) stacks
+        ( A.fromList $ map (CrateStack . catMaybes) $ L.transpose crateRows
         , instructions
         )
 

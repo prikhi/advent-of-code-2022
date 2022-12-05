@@ -1,5 +1,6 @@
 module Data.Array (
     module A,
+    fromList,
     set,
     setAll,
     sparseGrid,
@@ -13,6 +14,11 @@ import Data.Function
 import GHC.Arr as A
 
 import qualified Data.List as L
+
+
+-- | Build a 0-indexed Array from a list.
+fromList :: (A.Ix i, Num i) => [a] -> A.Array i a
+fromList l = A.listArray (0, fromIntegral $ length l - 1) l
 
 
 -- | Set the values of multiple indexes in bulk.
