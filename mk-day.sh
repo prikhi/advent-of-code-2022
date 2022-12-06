@@ -32,6 +32,7 @@ import Data.Function    (on)
 import Data.Functor
 import Data.Map         (Map)
 import Data.Maybe
+import Data.MultiSet    (MultiSet)
 import Data.Set         (Set)
 import Text.ParserCombinators.ReadP
 
@@ -41,6 +42,7 @@ import ParseHelper
 import qualified Data.Array as A
 import qualified Data.List as L
 import qualified Data.Map as M
+import qualified Data.MultiSet as MS
 import qualified Data.Set as S
 
 import Debug.Trace
