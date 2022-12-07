@@ -31,29 +31,8 @@ main =
 -- SOLVE
 
 sumDirectorySizeAtMost :: Int -> FileSystem -> Int
-sumDirectorySizeAtMost maxSizeToCount (FileSystem rootFs) =
-    sum $ concatMap (snd . findMatchingDirSize) $ M.toList rootFs
-  where
-    findMatchingDirSize :: (String, FSNode) -> (Int, [Int])
-    findMatchingDirSize = \case
-        (_, FileNode {}) -> (0, [])
-        (_, DirectoryNode (FileSystem dirFs)) ->
-            let childDirSizes = map findMatchingDirSize $ M.toList dirFs
-                childFileSizeSum =
-                    sum
-                        . map
-                            ( ( \case
-                                    FileNode s -> s
-                                    DirectoryNode {} -> 0
-                              )
-                                . snd
-                            )
-                        $ M.toList dirFs
-                totalDirSize = sum (map fst childDirSizes) + childFileSizeSum
-                matchingChildDirSums = concatMap snd childDirSizes
-             in if totalDirSize <= maxSizeToCount
-                    then (totalDirSize, totalDirSize : matchingChildDirSums)
-                    else (totalDirSize, matchingChildDirSums)
+sumDirectorySizeAtMost maxSizeToCount =
+    sum . filter (<= maxSizeToCount) . directorySizes
 
 
 sizeOfDirToDelete :: Int -> Int -> FileSystem -> Int
@@ -86,24 +65,6 @@ data FSNode
     deriving (Show, Read, Eq, Ord)
 
 
--- | Pretty print a file system.
-showFileSystem :: FileSystem -> String
-showFileSystem (FileSystem rootFs) =
-    unlines $ go 0 "/" rootFs
-  where
-    go :: Int -> String -> Map String FSNode -> [String]
-    go level dirName dirContents =
-        let orderedContents = L.sortOn fst $ M.toList dirContents
-            renderNode (nLabel, node) = case node of
-                FileNode size ->
-                    [replicate (succ level) ' ' <> "- " <> nLabel <> " (file, size=" <> show size <> ")"]
-                DirectoryNode (FileSystem childFs) ->
-                    go (succ level) nLabel childFs
-            dirSize = totalUsedSpace $ FileSystem dirContents
-         in (replicate level ' ' <> "- " <> dirName <> " (dir, size=" <> show dirSize <> ")")
-                : concatMap renderNode orderedContents
-
-
 -- | Determine the total space usage of a directory's file system.
 totalUsedSpace :: FileSystem -> Int
 totalUsedSpace (FileSystem rootFs) =
@@ -116,30 +77,16 @@ totalUsedSpace (FileSystem rootFs) =
         rootFs
 
 
--- | List out all directory sizes for a directory & all it's child
--- directories.
+-- | Generate sizes for all directories in a FileSystem.
 directorySizes :: FileSystem -> [Int]
-directorySizes (FileSystem fs) =
-    concatMap collectSizes fs
+directorySizes = concatMap collectSizes . fromFileSystem
   where
     collectSizes :: FSNode -> [Int]
     collectSizes = \case
         FileNode {} -> []
-        DirectoryNode (FileSystem dirFs) ->
-            let nodes = map snd $ M.toList dirFs
-                fileSizes =
-                    foldl'
-                        ( \acc -> \case
-                            FileNode s -> acc + s
-                            DirectoryNode {} -> acc
-                        )
-                        0
-                        nodes
-                childDirSizes = map collectSizes nodes
-                -- leverage the fact that the first element in each child
-                -- dirs list is the total size of that child directory.
-                childDirSizesSum = sum $ map (fromMaybe 0 . listToMaybe) childDirSizes
-             in (fileSizes + childDirSizesSum) : concat childDirSizes
+        DirectoryNode dfs ->
+            let childDirSizes = map (collectSizes . snd) . M.toList $ fromFileSystem dfs
+             in totalUsedSpace dfs : concat childDirSizes
 
 
 -- Generating FS from input data
